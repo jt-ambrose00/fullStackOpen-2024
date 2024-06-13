@@ -1,5 +1,9 @@
 import { useState } from 'react';
 
+import Search from './components/Search';
+import ContactForm from './components/ContactForm';
+import Contacts from './components/Contacts';
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '123-4567', id: 1 },
@@ -10,7 +14,7 @@ const App = () => {
 
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
-  const [personsToShow, setPersonsToShow] = useState(persons);
+  const [searchName, setSearchName] = useState('');
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -38,43 +42,27 @@ const App = () => {
   };
 
   const handleSearchName = (event) => {
-    const searchName = event.target.value.toLowerCase();
-    const searchMatch = persons.filter(
-      person => person.name.toLowerCase() === searchName
-    );
-
-    if (searchMatch.length === 0) {
-      setPersonsToShow(persons);
-    } else {
-      setPersonsToShow(searchMatch);
-    };
+    setSearchName(event.target.value);
   };
+
+  const searchedPerson = persons.filter(person => 
+    person.name.toLowerCase().includes(searchName.toLowerCase())
+  );
 
   return (
     <div>
-      <h2>Phonebook</h2>
-      <div>
-        search:
-        <input onChange={handleSearchName} />
-      </div>
+      <h1>Phonebook</h1>
+      <Search handleSearchName={handleSearchName} />
       <h2>Add a new contact</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name:
-          <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number:
-          <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {personsToShow.map(person =>
-        <p key={person.id}>{person.name} {person.number}</p>
-      )}
+      <ContactForm 
+        addPerson={addPerson}
+        newName={newName}
+        newNumber={newNumber}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+      />
+      <h2>Contacts</h2>
+      <Contacts searchedPerson={searchedPerson} />
     </div>
   );
 };
