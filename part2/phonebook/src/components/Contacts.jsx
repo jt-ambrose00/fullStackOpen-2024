@@ -1,8 +1,13 @@
-const Contacts = ({ searchedPerson }) => {
+const Contacts = ({ searchedPerson, deletePerson }) => {
     return (
         <>
             {searchedPerson.map(person =>
-                <p key={person.id}>{person.name} {person.number}</p>
+                <div key={person.id}>
+                    <p>{person.name} {person.number}</p>
+                    <button onClick={() => deletePerson(person)}>
+                        delete
+                    </button>
+                </div>
             )}
         </>
     );

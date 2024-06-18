@@ -31,7 +31,7 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
+      id: (persons.length + 1).toString()
     };
     
     personService
@@ -59,6 +59,16 @@ const App = () => {
     person.name.toLowerCase().includes(searchName.toLowerCase())
   );
 
+  const deletePerson = (event) => {
+    if (window.confirm(`Delete ${event.name}?`)) {
+      personService
+      .deletePerson(event.id)
+      .then(deletedPerson => {
+        setPersons(persons.filter(person => person.id !== deletedPerson.id))
+      });
+    }
+  };
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -72,7 +82,10 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Contacts</h2>
-      <Contacts searchedPerson={searchedPerson} />
+      <Contacts
+        searchedPerson={searchedPerson}
+        deletePerson={deletePerson}
+      />
     </div>
   );
 };
