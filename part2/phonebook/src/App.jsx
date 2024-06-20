@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Search from './components/Search';
 import ContactForm from './components/ContactForm';
 import Contacts from './components/Contacts';
+import Notification from './components/Notification';
 
 import personService from './services/persons';
 
@@ -11,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [searchName, setSearchName] = useState('');
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     personService
@@ -38,6 +40,12 @@ const App = () => {
             setPersons(persons.map(person =>
               person.id !== existingPerson.id ? person : updatedPerson)
             );
+            setSuccessMessage(
+              `Changed ${updatedPerson.name}'s phone number`
+            );
+            setTimeout(() => {
+              setSuccessMessage(null)
+            }, 5000);
           });
       };
     } else {
@@ -45,6 +53,12 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson));
+          setSuccessMessage(
+            `Added ${returnedPerson.name}`
+          );
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000);
         });
     };
 
@@ -81,6 +95,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={successMessage} />
       <Search handleSearchName={handleSearchName} />
       <h2>Add a new contact</h2>
       <ContactForm 
