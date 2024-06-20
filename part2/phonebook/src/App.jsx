@@ -12,7 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [searchName, setSearchName] = useState('');
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [message, setMessage] = useState({text: null, type: ''});
 
   useEffect(() => {
     personService
@@ -40,12 +40,25 @@ const App = () => {
             setPersons(persons.map(person =>
               person.id !== existingPerson.id ? person : updatedPerson)
             );
-            setSuccessMessage(
-              `Changed ${updatedPerson.name}'s phone number`
-            );
+            setMessage({
+              text: `Changed ${updatedPerson.name}'s phone number`,
+              type: 'success'
+            });
             setTimeout(() => {
-              setSuccessMessage(null)
+              setMessage({text: null, type: ''})
             }, 5000);
+          })
+          .catch(error => {
+            setMessage({
+              text: `Information for ${existingPerson.name} has already been removed from the server`,
+              type: 'error'
+            });
+            setTimeout(() => {
+              setMessage({text: null, type: ''})
+            }, 5000);
+            setPersons(persons.filter(person =>
+              person.id !== existingPerson.id)
+            );
           });
       };
     } else {
@@ -53,11 +66,12 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson));
-          setSuccessMessage(
-            `Added ${returnedPerson.name}`
-          );
+          setMessage({
+            text: `Added ${returnedPerson.name}`,
+            type: 'success'
+          });
           setTimeout(() => {
-            setSuccessMessage(null)
+            setMessage({text: null, type: ''})
           }, 5000);
         });
     };
@@ -95,7 +109,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <Notification message={successMessage} />
+      <Notification text={message.text} type={message.type} />
       <Search handleSearchName={handleSearchName} />
       <h2>Add a new contact</h2>
       <ContactForm 
