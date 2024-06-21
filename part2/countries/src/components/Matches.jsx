@@ -1,4 +1,4 @@
-const Matches = ({ searchedCountry }) => {
+const Matches = ({ searchedCountry, showCountry }) => {
     if (searchedCountry.length > 10) {
         return <p>too many matches, specify another filter</p>;
     };
@@ -15,7 +15,7 @@ const Matches = ({ searchedCountry }) => {
                 <h4>languages:</h4>
                 <ul>
                     {languages.map((language) => (
-                        <li>{language}</li>
+                        <li key={language}>{language}</li>
                     ))}
                 </ul>
                 <img
@@ -24,13 +24,18 @@ const Matches = ({ searchedCountry }) => {
                     className="flag-image"
                 />
             </div>
-        )
+        );
     };
 
     return (
         <>
             {searchedCountry.map(country =>
-                <p key={country.cca3}>{country.name.common}</p>
+                <div key={country.cca3} className="container">
+                    <p>{country.name.common}</p>
+                    <button id={country.cca3} onClick={showCountry}>
+                        show
+                    </button>
+                </div>
             )}
         </>
     );

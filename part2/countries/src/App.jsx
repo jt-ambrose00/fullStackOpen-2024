@@ -25,11 +25,19 @@ const App = () => {
     country.name.common.toLowerCase().includes(searchName.toLowerCase())
   );
 
+  const showCountry = (event) => {
+    countries.filter(country => {
+      if (country.cca3 === event.target.id) {
+        setSearchName(country.name.common);
+      };
+    });
+  };
+
   return (
     <>
       <h1>Countries</h1>
       <Lookup handleSearchName={handleSearchName} />
-      <Matches searchedCountry={searchedCountry} />
+      <Matches searchedCountry={searchedCountry} showCountry={showCountry} />
     </>
   );
 };
