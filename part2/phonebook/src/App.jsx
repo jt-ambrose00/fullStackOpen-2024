@@ -50,15 +50,15 @@ const App = () => {
           })
           .catch(error => {
             setMessage({
-              text: `Information for ${existingPerson.name} has already been removed from the server`,
+              text: error.response.data.error,
               type: 'error'
             });
             setTimeout(() => {
               setMessage({text: null, type: ''})
             }, 5000);
-            setPersons(persons.filter(person =>
-              person.id !== existingPerson.id)
-            );
+            // setPersons(persons.filter(person =>
+            //   person.id !== existingPerson.id)
+            // );
           });
       };
     } else {
@@ -69,6 +69,15 @@ const App = () => {
           setMessage({
             text: `Added ${returnedPerson.name}`,
             type: 'success'
+          });
+          setTimeout(() => {
+            setMessage({text: null, type: ''})
+          }, 5000);
+        })
+        .catch(error => {
+          setMessage({
+            text: error.response.data.error,
+            type: 'error'
           });
           setTimeout(() => {
             setMessage({text: null, type: ''})
