@@ -89,3 +89,49 @@ describe('total likes', () => {
         assert.strictEqual(result, 36)
     })
 })
+
+describe('favorite blog', () => {
+    const manyBlogs = [
+        {
+          title: "React patterns",
+          author: "Michael Chan",
+          likes: 7
+        },
+        {
+          title: "Go To Statement Considered Harmful",
+          author: "Edsger W. Dijkstra",
+          likes: 5
+        },
+        {
+          title: "Canonical string reduction",
+          author: "Edsger W. Dijkstra",
+          likes: 12
+        },
+        {
+          title: "First class tests",
+          author: "Robert C. Martin",
+          likes: 10
+        },
+        {
+          title: "TDD harms architecture",
+          author: "Robert C. Martin",
+          likes: 0
+        },
+        {
+          title: "Type wars",
+          author: "Robert C. Martin",
+          likes: 2
+        }  
+    ]
+
+    const topBlog = {
+        title: "Canonical string reduction",
+        author: "Edsger W. Dijkstra",
+        likes: 12
+    }
+
+    test('return the blog with the highest number of likes', () => {
+        const result = listHelper.favoriteBlog(manyBlogs)
+        assert.deepStrictEqual(result, topBlog)
+    })
+})
