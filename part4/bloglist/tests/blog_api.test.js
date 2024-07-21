@@ -42,6 +42,7 @@ test('correct number of blogs returned as json', async () => {
         .get('/api/blogs')
         .expect(200)
         .expect('Content-Type', /application\/json/)
+
     assert.strictEqual(response.body.length, initialBlogs.length)
 })
 
@@ -67,13 +68,32 @@ test('a valid blog can be added ', async () => {
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-  
+
     const response = await api.get('/api/blogs')
-    const contents = response.body.map(r => r.title)
-  
+    const titles = response.body.map(r => r.title)
+
     assert.strictEqual(response.body.length, initialBlogs.length + 1)
-    assert(contents.includes('First class tests'))
-  })
+    assert(titles.includes('First class tests'))
+})
+
+test('a blog can be added without specifying likes', async () => {
+    const newBlog = {
+        title: 'First class tests',
+        author: 'Robert C. Martin',
+        url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.html'
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const likes = response.body.map(r => r.likes)
+
+    assert.strictEqual(likes[response.body.length - 1], 0)
+})
 
 after(async () => {
     await mongoose.connection.close()
