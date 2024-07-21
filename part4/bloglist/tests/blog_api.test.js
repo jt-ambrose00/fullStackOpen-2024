@@ -64,10 +64,10 @@ test('a valid blog can be added ', async () => {
     }
 
     await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
 
     const response = await api.get('/api/blogs')
     const titles = response.body.map(r => r.title)
@@ -84,15 +84,39 @@ test('a blog can be added without specifying likes', async () => {
     }
 
     await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
 
     const response = await api.get('/api/blogs')
     const likes = response.body.map(r => r.likes)
 
     assert.strictEqual(likes[response.body.length - 1], 0)
+})
+
+test('blog won\'t be added without title/url', async () => {
+    const noTitle = {
+        author: 'Robert C. Martin',
+        url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.html'
+    }
+
+    const noUrl = {
+        title: 'First class tests',
+        author: 'Robert C. Martin'
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(noTitle)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+    await api
+        .post('/api/blogs')
+        .send(noUrl)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
 })
 
 after(async () => {
