@@ -119,6 +119,21 @@ test('blog won\'t be added without title/url', async () => {
         .expect('Content-Type', /application\/json/)
 })
 
+test('a blog can be deleted', async () => {
+    const startingBlogs = await api.get('/api/blogs')
+    const blogToDelete = startingBlogs.body[1]
+
+    await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204)
+
+    const endingBlogs = await api.get('/api/blogs')
+    const titles = endingBlogs.body.map(e => e.title)
+
+    assert(!titles.includes(blogToDelete.title))
+    assert.strictEqual(endingBlogs.body.length, initialBlogs.length - 1)
+})
+
 after(async () => {
     await mongoose.connection.close()
 })
