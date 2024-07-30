@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -11,6 +12,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [message, setMessage] = useState({text: null, type: ''})
 
   useEffect(() => {
     blogService
@@ -44,10 +46,13 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (exception) {
-      setErrorMessage('Wrong credentials')
+    } catch (error) {
+      setMessage({
+        text: error.response.data.error,
+        type: 'error'
+      })
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage({text: null, type: ''})
       }, 5000)
     }
   }
@@ -82,14 +87,26 @@ const App = () => {
       const newBlog = await blogService.create({
         title, author, url
       })
+
+      setMessage({
+        text: `a new blog ${title} by ${author} added`,
+        type: 'success'
+      })
+      setTimeout(() => {
+        setMessage({text: null, type: ''})
+      }, 5000)
+
       setBlogs(blogs.concat(newBlog))
       setTitle('')
       setAuthor('')
       setUrl('')
-    } catch (exception) {
-      setErrorMessage('must add title, author, and url')
+    } catch (error) {
+      setMessage({
+        text: error.response.data.error,
+        type: 'error'
+      })
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage({text: null, type: ''})
       }, 5000)
     }
   }
@@ -133,6 +150,7 @@ const App = () => {
     return (
       <>
         <h1>Blogs</h1>
+        <Notification text={message.text} type={message.type} />
         <h4>Log in to application</h4>
         {loginForm()}
       </>
@@ -142,6 +160,7 @@ const App = () => {
   return (
     <>
       <h1>Blogs</h1>
+      <Notification text={message.text} type={message.type} />
       <p>{user.name} logged-in</p>
       <button onClick={logout}>logout</button>
       <br />
