@@ -97,6 +97,23 @@ const App = () => {
     }
   }
 
+  const updateLikes = async (id, updatedBlog) => {
+    try {
+      await blogService.update(id, updatedBlog)
+      setBlogs(blogs.map(blog => 
+        blog.id === updatedBlog.id ? updatedBlog : blog
+      ))
+      setMessage({
+        text: `liked ${updatedBlog.title} by ${updatedBlog.author}`,
+        type: 'success'
+      })
+      resetMessage()
+    } catch (error) {
+      errorMessage(error)
+      resetMessage()
+    }
+  }
+
   const errorMessage = (error) => {
     setMessage({
       text: error.response.data.error,
@@ -134,7 +151,7 @@ const App = () => {
       </Togglable>
       <br />
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateLikes={updateLikes} />
       )}
     </>
   )
