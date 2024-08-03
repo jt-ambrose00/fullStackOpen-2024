@@ -114,6 +114,25 @@ const App = () => {
     }
   }
 
+  const removeBlogIfAddedByUser = async (id, removedBlog) => {
+    try {
+      if (window.confirm(
+        `remove ${removedBlog.title} by ${removedBlog.author}?`
+      )) {
+        await blogService.deleteBlog(id, removedBlog)
+        setBlogs(blogs.filter(blog => blog.id !== removedBlog.id))
+        setMessage({
+          text: `deleted ${removedBlog.title} by ${removedBlog.author}`,
+          type: 'success'
+        })
+        resetMessage()
+      }
+    } catch (error) {
+      errorMessage(error)
+      resetMessage()
+    }
+  }
+
   const errorMessage = (error) => {
     setMessage({
       text: error.response.data.error,
@@ -153,8 +172,15 @@ const App = () => {
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map(blog =>
-          <Blog key={blog.id} blog={blog} updateLikes={updateLikes} />
-        )}
+          <Blog 
+            key={blog.id}
+            blog={blog}
+            currentUser={user}
+            updateLikes={updateLikes}
+            removeBlogIfAddedByUser={removeBlogIfAddedByUser}
+          />
+        )
+      }
     </>
   )
 }
