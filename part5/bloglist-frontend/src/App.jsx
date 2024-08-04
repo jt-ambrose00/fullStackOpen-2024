@@ -11,7 +11,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState({text: null, type: ''})
+  const [message, setMessage] = useState({ text: null, type: '' })
   const blogFormRef = useRef()
 
   useEffect(() => {
@@ -73,7 +73,7 @@ const App = () => {
         />
       </div>
       <button type="submit">login</button>
-    </form>      
+    </form>
   )
 
   const logout = () => {
@@ -100,7 +100,7 @@ const App = () => {
   const updateLikes = async (id, updatedBlog) => {
     try {
       await blogService.update(id, updatedBlog)
-      setBlogs(blogs.map(blog => 
+      setBlogs(blogs.map(blog =>
         blog.id === updatedBlog.id ? updatedBlog : blog
       ))
       setMessage({
@@ -142,7 +142,7 @@ const App = () => {
 
   const resetMessage = () => {
     setTimeout(() => {
-      setMessage({text: null, type: ''})
+      setMessage({ text: null, type: '' })
     }, 5000)
   }
 
@@ -172,7 +172,7 @@ const App = () => {
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map(blog =>
-          <Blog 
+          <Blog
             key={blog.id}
             blog={blog}
             currentUser={user}

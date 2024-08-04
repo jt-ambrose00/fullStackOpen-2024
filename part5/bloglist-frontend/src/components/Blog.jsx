@@ -16,7 +16,7 @@ const Blog = (props) => {
   }
 
   const addLikeToBlog = async () => {
-    const updatedBlog = {...props.blog, likes: props.blog.likes + 1}
+    const updatedBlog = { ...props.blog, likes: props.blog.likes + 1 }
     props.updateLikes(props.blog.id, updatedBlog)
   }
 
@@ -42,8 +42,8 @@ const Blog = (props) => {
             <button onClick={addLikeToBlog}>like</button>
           </div>
           <div>
-            {props.blog.user && props.blog.user.name 
-              ? props.blog.user.name 
+            {props.blog.user && props.blog.user.name
+              ? props.blog.user.name
               : 'Unknown user'
             }
           </div>
