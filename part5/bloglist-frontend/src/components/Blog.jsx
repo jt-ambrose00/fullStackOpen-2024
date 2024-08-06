@@ -40,7 +40,9 @@ const Blog = (props) => {
           </div>
           <div className='likes'>
             likes: {props.blog.likes}
-            <button onClick={addLikeToBlog}>like</button>
+            <button className='likeButton' onClick={addLikeToBlog}>
+              like
+            </button>
           </div>
           <div>
             {props.blog.user && props.blog.user.name
