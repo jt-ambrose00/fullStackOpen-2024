@@ -3,6 +3,7 @@ import { useState } from 'react'
 const Blog = (props) => {
   const [visible, setVisible] = useState(false)
   const userBlog = props.blog.user.username === props.currentUser.username
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -26,7 +27,7 @@ const Blog = (props) => {
 
   return (
     <div style={blogStyle}>
-      <div>
+      <div className='initialBlogInfo'>
         {props.blog.title} by {props.blog.author}
         <button onClick={toggleVisibility}>
           {visible ? 'hide' : 'view'}
