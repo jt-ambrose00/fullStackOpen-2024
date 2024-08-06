@@ -35,10 +35,10 @@ const Blog = (props) => {
       </div>
       {visible && (
         <>
-          <div>
+          <div className='url'>
             {props.blog.url}
           </div>
-          <div>
+          <div className='likes'>
             likes: {props.blog.likes}
             <button onClick={addLikeToBlog}>like</button>
           </div>
