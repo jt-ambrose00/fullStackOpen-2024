@@ -66,4 +66,26 @@ describe('Blog app', () => {
             .toBeVisible()
     })
   })
+
+  describe('When logged in and blog added', () => {
+    beforeEach(async ({ page }) => {
+        await page.getByTestId('username').fill('mluukkai')
+        await page.getByTestId('password').fill('salainen')
+        await page.getByRole('button', { name: 'login' }).click()
+
+        await page.getByRole('button', { name: 'create' }).click()
+        await page.getByTestId('title').fill('e2e title')
+        await page.getByTestId('author').fill('e2e author')
+        await page.getByTestId('url').fill('www.e2e.com')
+        await page.getByRole('button', { name: 'save' }).click()
+    })
+
+    test('blog can be liked', async ({ page }) => {
+        await page.getByRole('button', { name: 'view' }).click()
+        await page.getByRole('button', { name: 'like' }).click()
+
+        await expect(page.locator('.likes'))
+            .toContainText('likes: 1')
+    })
+  })
 })
