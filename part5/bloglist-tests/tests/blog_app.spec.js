@@ -80,6 +80,20 @@ describe('Blog app', () => {
         await page.getByRole('button', { name: 'save' }).click()
     })
 
+    test('blog can be deleted by user who added it', async ({ page }) => {
+        page.on('dialog', async dialog => {
+            expect(dialog.message())
+                .toContain('remove e2e title by e2e author?')
+            await dialog.accept()
+        })
+
+        await page.getByRole('button', { name: 'view' }).click()
+        await page.getByRole('button', { name: 'remove' }).click()
+
+        await expect(page.locator('.initialBlogInfo'))
+            .not.toBeVisible()
+    })
+
     test('blog can be liked', async ({ page }) => {
         await page.getByRole('button', { name: 'view' }).click()
         await page.getByRole('button', { name: 'like' }).click()
