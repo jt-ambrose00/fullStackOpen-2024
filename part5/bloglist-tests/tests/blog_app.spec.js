@@ -87,15 +87,35 @@ describe('Blog app', () => {
             await dialog.accept()
         })
 
-        await page.getByRole('button', { name: 'view' }).click()
+        await page.getByRole('button', { name: 'view' }).first().click()
         await page.getByRole('button', { name: 'remove' }).click()
 
         await expect(page.locator('.initialBlogInfo'))
             .not.toBeVisible()
     })
 
+    test('remove button only visible to correct user', async ({ page, request }) => {
+        await request.post('http://localhost:5173/api/users', {
+            data: {
+              username: 'steven',
+              name: 'Ron Stevens',
+              password: 'secret'
+            }
+        })
+
+        await page.getByRole('button', { name: 'logout' }).click()
+        await page.getByTestId('username').fill('steven')
+        await page.getByTestId('password').fill('secret')
+        await page.getByRole('button', { name: 'login' }).click()
+
+        await page.getByRole('button', { name: 'view' }).first().click()
+
+        await expect(page.getByRole('button', { name: 'remove' }))
+            .not.toBeVisible()
+    })
+
     test('blog can be liked', async ({ page }) => {
-        await page.getByRole('button', { name: 'view' }).click()
+        await page.getByRole('button', { name: 'view' }).first().click()
         await page.getByRole('button', { name: 'like' }).click()
 
         await expect(page.locator('.likes'))
