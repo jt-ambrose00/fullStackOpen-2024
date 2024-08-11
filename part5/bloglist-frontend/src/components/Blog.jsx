@@ -26,7 +26,7 @@ const Blog = (props) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className='blogEntry' style={blogStyle}>
       <div className='initialBlogInfo'>
         {props.blog.title} by {props.blog.author}
         <button onClick={toggleVisibility}>

@@ -22,6 +22,7 @@ const BlogForm = (props) => {
         type="text"
         value={title}
         placeholder="title"
+        data-testid='title'
         onChange={({ target }) => setTitle(target.value)}
       />
       <br />
@@ -30,6 +31,7 @@ const BlogForm = (props) => {
         type="text"
         value={author}
         placeholder="author"
+        data-testid='author'
         onChange={({ target }) => setAuthor(target.value)}
       />
       <br />
@@ -38,6 +40,7 @@ const BlogForm = (props) => {
         type="text"
         value={url}
         placeholder="url"
+        data-testid='url'
         onChange={({ target }) => setUrl(target.value)}
       />
       <br />
