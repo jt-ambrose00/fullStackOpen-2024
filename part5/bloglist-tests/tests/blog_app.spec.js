@@ -15,9 +15,9 @@ describe('Blog app', () => {
   })
 
   test('Login form is shown', async ({ page }) => {
-    const loginButton = await page.getByRole('button', { name: 'login' })
-    const usernameInput = await page.getByText('username')
-    const passwordInput = await page.getByText('password')
+    const loginButton = page.getByRole('button', { name: 'login' })
+    const usernameInput = page.getByText('username')
+    const passwordInput = page.getByText('password')
 
     await expect(loginButton).toBeVisible()
     await expect(usernameInput).toBeVisible()
@@ -120,6 +120,57 @@ describe('Blog app', () => {
 
         await expect(page.locator('.likes'))
             .toContainText('likes: 1')
+    })
+  })
+
+  describe('User logged in, multiple blogs added', () => {
+    beforeEach(async ({ page }) => {
+        await page.getByTestId('username').fill('mluukkai')
+        await page.getByTestId('password').fill('salainen')
+        await page.getByRole('button', { name: 'login' }).click()
+
+        await page.getByRole('button', { name: 'create' }).click()
+        await page.getByTestId('title').fill('added first')
+        await page.getByTestId('author').fill('first author')
+        await page.getByTestId('url').fill('www.first.com')
+        await page.getByRole('button', { name: 'save' }).click()
+
+        await page.getByRole('button', { name: 'create' }).click()
+        await page.getByTestId('title').fill('added second')
+        await page.getByTestId('author').fill('second author')
+        await page.getByTestId('url').fill('www.second.com')
+        await page.getByRole('button', { name: 'save' }).click()
+
+        await page.getByRole('button', { name: 'create' }).click()
+        await page.getByTestId('title').fill('added third')
+        await page.getByTestId('author').fill('third author')
+        await page.getByTestId('url').fill('www.third.com')
+        await page.getByRole('button', { name: 'save' }).click()
+    })
+
+    test('blogs are arranged according to likes', async ({ page }) => {
+      const second = page.locator('.blogEntry')
+        .filter({ hasText: 'added second by second author' })
+      const third = page.locator('.blogEntry')
+        .filter({ hasText: 'added third by third author' })
+
+      await second.getByRole('button', { name: 'view' }).click()
+      await third.getByRole('button', { name: 'view' }).click()
+
+      await second.getByRole('button', { name: 'like' }).click()
+      await page.waitForTimeout(500)
+      await second.getByRole('button', { name: 'like' }).click()
+      await page.waitForTimeout(500)
+      await third.getByRole('button', { name: 'like' }).click()
+      await page.waitForTimeout(500)
+
+      await expect(second).toContainText('likes: 2')
+      await expect(third).toContainText('likes: 1')
+    
+      await expect(page.locator('.blogEntry')
+        .first()).toContainText('added second by second author')
+      await expect(page.locator('.blogEntry')
+        .last()).toContainText('added first by first author')
     })
   })
 })
