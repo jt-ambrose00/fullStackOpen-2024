@@ -20,8 +20,9 @@ const asObject = (anecdote) => {
 const initialState = anecdotesAtStart.map(asObject)
 
 const reducer = (state = initialState, action) => {
-  // console.log('state now:', state)
-  // console.log('action:', action)
+  console.log('state now:', state)
+  console.log('action:', action)
+  console.log(asObject(action.payload))
   switch (action.type) {
     case 'ADD_LIKE':
       return state.map(anecdote => 
@@ -29,6 +30,8 @@ const reducer = (state = initialState, action) => {
           ? { ...anecdote, votes: anecdote.votes + 1 }
           : anecdote
       )
+    case 'NEW_ANECDOTE':
+      return state.concat(asObject(action.payload))
     default: return state
   }
 }
