@@ -12,9 +12,9 @@ const NewList = () => {
 
   const dispatch = useDispatch()
 
-  const vote = (id, content) => {
-    dispatch(addVote(id))
-    dispatch(notificationMessage(`voted for '${content}'`))
+  const vote = (anecdote) => {
+    dispatch(addVote(anecdote))
+    dispatch(notificationMessage(`voted for '${anecdote.content}'`))
   }
 
   return (
@@ -26,7 +26,7 @@ const NewList = () => {
           </div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id, anecdote.content)}>
+            <button onClick={() => vote(anecdote)}>
               vote
             </button>
           </div>
