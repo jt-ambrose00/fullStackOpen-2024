@@ -1,4 +1,7 @@
 const AnecdoteForm = () => {
+  const style = {
+    marginBottom: 10
+  }
 
   const onCreate = (event) => {
     event.preventDefault()
@@ -8,7 +11,7 @@ const AnecdoteForm = () => {
 }
 
   return (
-    <div>
+    <div style={style}>
       <h3>create new</h3>
       <form onSubmit={onCreate}>
         <input name='anecdote' />
