@@ -6,6 +6,8 @@ const notificationReducer = (state, action) => {
         return action.payload
     case "LIKE":
         return action.payload
+    case "ERROR":
+        return action.payload
     case "REMOVE":
         return ''
     default:
