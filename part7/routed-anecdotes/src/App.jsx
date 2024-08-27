@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes,
+  Route,
+  Link,
+  useParams
 } from 'react-router-dom'
 
 const AnecdoteList = ({ anecdotes }) => (
@@ -9,11 +12,31 @@ const AnecdoteList = ({ anecdotes }) => (
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map(anecdote => 
-        <li key={anecdote.id}>{anecdote.content}</li>)
+        <li key={anecdote.id}>
+          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+        </li>)
       }
     </ul>
   </div>
 )
+
+const Anecdote = ({ anecdotes }) => {
+  const padding = {
+    paddingBottom: 10
+  }
+  const id = useParams().id
+  const anecdote = anecdotes.find(a => a.id === Number(id))
+
+  return (
+    <div style={padding}>
+      <h2>{anecdote.content}</h2>
+      <div>author: {anecdote.author}</div>
+      <div>url: <Link to={anecdote.info}>{anecdote.info}</Link>
+      </div>
+      <div>likes: {anecdote.votes}</div>
+    </div>
+  )
+}
 
 const About = () => (
   <div>
@@ -40,6 +63,10 @@ const CreateNew = (props) => {
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
 
+  const padding = {
+    paddingBottom: 10
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
@@ -51,7 +78,7 @@ const CreateNew = (props) => {
   }
 
   return (
-    <div>
+    <div style={padding}>
       <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -137,6 +164,10 @@ const App = () => {
       <Routes >
         <Route path="/about" element={<About />} />
         <Route path="/create" element={<CreateNew />} />
+        <Route
+          path="/anecdotes/:id"
+          element={<Anecdote anecdotes={anecdotes}/>} 
+        />
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
       </Routes>
       <Footer />
