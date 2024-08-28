@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Link,
-  useParams
+  useNavigate,
+  useMatch
 } from 'react-router-dom'
 
 const AnecdoteList = ({ anecdotes }) => (
@@ -20,18 +20,17 @@ const AnecdoteList = ({ anecdotes }) => (
   </div>
 )
 
-const Anecdote = ({ anecdotes }) => {
+const Anecdote = ({ anecdote }) => {
   const padding = {
     paddingBottom: 10
   }
-  const id = useParams().id
-  const anecdote = anecdotes.find(a => a.id === Number(id))
 
   return (
     <div style={padding}>
       <h2>{anecdote.content}</h2>
       <div>author: {anecdote.author}</div>
-      <div>url: <Link to={anecdote.info}>{anecdote.info}</Link>
+      <div>
+        url: <Link to={anecdote.info}>{anecdote.info}</Link>
       </div>
       <div>likes: {anecdote.votes}</div>
     </div>
@@ -62,6 +61,7 @@ const CreateNew = (props) => {
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
+  const navigate = useNavigate()
 
   const padding = {
     paddingBottom: 10
@@ -75,6 +75,7 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    navigate('/')
   }
 
   return (
@@ -138,7 +139,17 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+
+    setNotification(`a new anecdote '${anecdote.content}' created!`)
+    setTimeout(() => {
+      setNotification('')
+    }, 5000)
   }
+
+  const match = useMatch('/anecdotes/:id')
+  const anecdote = match
+    ? anecdotes.find(a => a.id === Number(match.params.id))
+    : null
 
   const anecdoteById = (id) => anecdotes.find(a => a.id === id)
 
@@ -154,24 +165,28 @@ const App = () => {
   }
 
   return (
-    <Router >
+    <>
       <h1>Software anecdotes</h1>
       <nav>
         <Link style={padding} to="/">anecdotes</Link>
         <Link style={padding} to="/create">create new</Link>
         <Link style={padding} to="/about">about</Link>
       </nav>
+      {notification
+        ? <p><strong>{notification}</strong></p>
+        : ''
+      }
       <Routes >
         <Route path="/about" element={<About />} />
-        <Route path="/create" element={<CreateNew />} />
+        <Route path="/create" element={<CreateNew addNew={addNew} />} />
         <Route
           path="/anecdotes/:id"
-          element={<Anecdote anecdotes={anecdotes}/>} 
+          element={<Anecdote anecdote={anecdote}/>} 
         />
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
       </Routes>
       <Footer />
-    </Router>
+    </>
   )
 }
 
