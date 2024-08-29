@@ -79,6 +79,13 @@ const CreateNew = (props) => {
     navigate('/')
   }
 
+  const resetAll = (event) => {
+    event.preventDefault()
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
   return (
     <div style={padding}>
       <h2>create a new anecdote</h2>
@@ -111,6 +118,9 @@ const CreateNew = (props) => {
           />
         </div>
         <button type='submit'>create</button>
+        <button onClick={resetAll}>
+          reset
+        </button>
       </form>
     </div>
   )
