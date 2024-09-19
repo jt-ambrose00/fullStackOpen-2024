@@ -1,4 +1,5 @@
 import { useDispatch } from 'react-redux'
+
 import { searchTerm } from '../reducers/filterReducer'
 
 const Filter = () => {
