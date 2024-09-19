@@ -3,7 +3,9 @@ const assert = require('node:assert')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const supertest = require('supertest')
+
 const User = require('../models/user')
+
 const app = require('../app')
 const api = supertest(app)
 
