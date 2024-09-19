@@ -1,41 +1,40 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 
-const NewBlog = ({ doCreate }) => {
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
-  const [author, setAuthor] = useState('')
+import { createBlog } from '../reducers/blogReducer'
+import { notificationMessage } from '../reducers/notificationReducer'
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value)
-  }
+const NewBlog = ({ blogFormRef }) => {
+  const dispatch = useDispatch()
 
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value)
-  }
-
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value)
-  }
-
-  const handleSubmit = (event) => {
+  const handleCreate = async (event) => {
     event.preventDefault()
-    doCreate({ title, url, author })
-    setAuthor('')
-    setTitle('')
-    setUrl('')
+
+    const title = event.target.title.value
+    const url = event.target.url.value
+    const author = event.target.author.value
+
+    event.target.title.value = ''
+    event.target.url.value = ''
+    event.target.author.value = ''
+
+    const content = { title, url, author }
+
+    dispatch(createBlog(content))
+    dispatch(notificationMessage(`Added ${title} by ${author}`, 'success', 5))
+    blogFormRef.current.toggleVisibility()
   }
 
   return (
     <div>
       <h2>Create a New Blog</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleCreate}>
         <div>
           <label>Title:</label>
           <input
             type="text"
             data-testid='title'
-            value={title}
-            onChange={handleTitleChange}
+            name='title'
           />
         </div>
         <div>
@@ -43,8 +42,7 @@ const NewBlog = ({ doCreate }) => {
           <input
             type="text"
             data-testid='url'
-            value={url}
-            onChange={handleUrlChange}
+            name='url'
           />
         </div>
         <div>
@@ -52,8 +50,7 @@ const NewBlog = ({ doCreate }) => {
           <input
             type="text"
             data-testid='author'
-            value={author}
-            onChange={handleAuthorChange}
+            name='author'
           />
         </div>
         <button type="submit">Create</button>
