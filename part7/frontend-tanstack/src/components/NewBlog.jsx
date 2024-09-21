@@ -1,28 +1,37 @@
-import React, { useState } from 'react'
+import React, { useReducer } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const NewBlog = ({ doCreate }) => {
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
-  const [author, setAuthor] = useState('')
+import blogService from '../services/blogs'
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value)
-  }
+import newBlogReducer, { initialState } from '../reducers/NewBlogReducer'
 
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value)
-  }
+const NewBlog = ({ notify, blogFormRef }) => {
+  const [formState, dispatch] = useReducer(newBlogReducer, initialState)
 
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value)
+  const queryClient = useQueryClient()
+
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.concat(newBlog))
+    }
+  })
+
+  const doCreate = async (blog) => {
+    newBlogMutation.mutate(blog)
+    notify('CREATE', `Added ${blog.title} by ${blog.author}`)
+    blogFormRef.current.toggleVisibility()
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    doCreate({ title, url, author })
-    setAuthor('')
-    setTitle('')
-    setUrl('')
+    doCreate({
+      title: formState.title,
+      url: formState.url,
+      author: formState.author 
+    })
+    dispatch({ type: 'RESET' })
   }
 
   return (
@@ -34,8 +43,10 @@ const NewBlog = ({ doCreate }) => {
           <input
             type="text"
             data-testid='title'
-            value={title}
-            onChange={handleTitleChange}
+            value={formState.title}
+            onChange={(e) => dispatch({
+              type: 'SET_TITLE', payload: e.target.value
+            })}
           />
         </div>
         <div>
@@ -43,8 +54,10 @@ const NewBlog = ({ doCreate }) => {
           <input
             type="text"
             data-testid='url'
-            value={url}
-            onChange={handleUrlChange}
+            value={formState.url}
+            onChange={(e) => dispatch({
+              type: 'SET_URL', payload: e.target.value
+            })}
           />
         </div>
         <div>
@@ -52,8 +65,10 @@ const NewBlog = ({ doCreate }) => {
           <input
             type="text"
             data-testid='author'
-            value={author}
-            onChange={handleAuthorChange}
+            value={formState.author}
+            onChange={(e) => dispatch({
+              type: 'SET_AUTHOR', payload: e.target.value
+            })}
           />
         </div>
         <button type="submit">Create</button>

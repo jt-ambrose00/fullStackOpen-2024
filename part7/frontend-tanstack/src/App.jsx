@@ -1,4 +1,5 @@
 import { useState, useEffect, createRef } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -13,15 +14,36 @@ import Togglable from './components/Togglable'
 import { useNotificationDispatch } from './reducers/NotificationContext'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
+  const queryClient = useQueryClient()
   const notificationDispatch = useNotificationDispatch()
+  const blogFormRef = createRef()
+  const [user, setUser] = useState(null)
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    refetchOnWindowFocus: false
+  })
+
+  const updateBlogMutation = useMutation({
+    mutationFn: (blog) => blogService.update(blog.id, blog),
+    onSuccess: (updatedBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.map(blog => 
+        updatedBlog.id === blog.id ? updatedBlog : blog
+      ))
+    },
+  })
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.remove,
+    onSuccess: (data, id) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.filter(blog => 
+        blog.id !== id
+      ))
+    }
+  })
 
   useEffect(() => {
     const user = storage.loadUser()
@@ -29,8 +51,6 @@ const App = () => {
       setUser(user)
     }
   }, [])
-
-  const blogFormRef = createRef()
 
   const notify = (type, payload, messageType = 'success', seconds = 5) => {
     notificationDispatch({ type, payload, messageType })
@@ -50,34 +70,21 @@ const App = () => {
     }
   }
 
-  const handleCreate = async (blog) => {
-    const newBlog = await blogService.create(blog)
-    setBlogs(blogs.concat(newBlog))
-    notify('CREATE', `Added ${newBlog.title} by ${newBlog.author}`)
-    blogFormRef.current.toggleVisibility()
-  }
-
-  const handleVote = async (blog) => {
-    // console.log('updating', blog)
-    const updatedBlog = await blogService.update(blog.id, {
-      ...blog,
-      likes: blog.likes + 1
-    })
-
-    notify('LIKE', `You liked ${updatedBlog.title} by ${updatedBlog.author}`)
-    setBlogs(blogs.map(b => b.id === blog.id ? updatedBlog : b))
-  }
-
   const handleLogout = () => {
     setUser(null)
     storage.removeUser()
     notify('LOGOUT', `Bye, ${user.name}!`)
   }
 
+  const handleVote = async (blog) => {
+    const updatedBlog = { ...blog, likes: blog.likes + 1 }
+    updateBlogMutation.mutate(updatedBlog)
+    notify('LIKE', `You liked ${blog.title} by ${blog.author}`)
+  }
+
   const handleDelete = async (blog) => {
-    if (window.confirm(`Removed ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog.id)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
+    if (window.confirm(`Remove ${blog.title} by ${blog.author}?`)) {
+      deleteBlogMutation.mutate(blog.id)
       notify('DELETE', `${blog.title} by ${blog.author} was removed`)
     }
   }
@@ -92,7 +99,15 @@ const App = () => {
     )
   }
 
-  const byLikes = (a, b) => b.likes - a.likes
+  if (isPending) {
+    return <div>Loading...</div>
+  }
+
+  if (isError) {
+    return  <div>
+      blog service not available due to problems in server
+    </div>
+  }
 
   return (
     <div>
@@ -105,9 +120,9 @@ const App = () => {
         </button>
       </div>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <NewBlog doCreate={handleCreate} />
+        <NewBlog notify={notify} blogFormRef={blogFormRef} />
       </Togglable>
-      {blogs.sort(byLikes).map(blog =>
+      {data.sort((a, b) => b.likes - a.likes).map(blog =>
         <Blog
           key={blog.id}
           blog={blog}

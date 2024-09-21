@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+
 import storage from '../services/storage'
 
 const Blog = ({ blog, handleVote, handleDelete }) => {
   const [visible, setVisible] = useState(false)
 
   const nameOfUser = blog.user ? blog.user.name : 'anonymous'
+  const canRemove = blog.user ? blog.user.username === storage.me() : true
 
   const style = {
     border: 'solid',
@@ -13,8 +15,6 @@ const Blog = ({ blog, handleVote, handleDelete }) => {
     borderWidth: 1,
     marginBottom: 5,
   }
-
-  const canRemove = blog.user ? blog.user.username === storage.me() : true
 
   // console.log(blog.user, storage.me(), canRemove)
 
@@ -42,7 +42,6 @@ const Blog = ({ blog, handleVote, handleDelete }) => {
           </button>}
         </div>
       )}
-
     </div>
   )
 }
