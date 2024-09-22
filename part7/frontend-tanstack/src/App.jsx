@@ -1,10 +1,11 @@
 import { useEffect, createRef, useContext } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useMatch } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './services/storage'
+import userService from './services/users'
 
 import Login from './components/Login'
 import Blog from './components/Blog'
@@ -12,6 +13,7 @@ import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
+import User from './components/User'
 
 import { useNotificationDispatch } from './reducers/NotificationContext'
 import UserContext from './reducers/UserContext'
@@ -48,19 +50,19 @@ const App = () => {
     }
   })
 
-  useEffect(() => {
-    const user = storage.loadUser()
-    if (user) {
-      userDispatch({ type: 'SET_USER', payload: user })
-    }
-  }, [])
-
   const notify = (type, payload, messageType = 'success', seconds = 5) => {
     notificationDispatch({ type, payload, messageType })
     setTimeout(() => {
       notificationDispatch({ type: 'REMOVE' })
     }, seconds * 1000)
   }
+
+  useEffect(() => {
+    const user = storage.loadUser()
+    if (user) {
+      userDispatch({ type: 'SET_USER', payload: user })
+    }
+  }, [])
 
   const loginMutation = useMutation({
     mutationFn: (credentials) => loginService.login(credentials)
@@ -98,6 +100,12 @@ const App = () => {
     }
   }
 
+  const allUsers = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.getAll,
+    refetchOnWindowFocus: false,
+  })
+
   if (!user) {
     return (
       <div>
@@ -115,6 +123,16 @@ const App = () => {
   if (allBlogs.isError) {
     return  <div>
       Blog service not available due to problems in server
+    </div>
+  }
+
+  if (allUsers.isPending) {
+    return <div>Loading users...</div>
+  }
+
+  if (allUsers.isError) {
+    return  <div>
+      User service not available due to problems in server
     </div>
   }
 
@@ -144,7 +162,8 @@ const App = () => {
             )}
           </>
         } />
-        <Route path='/users' element={<Users />} />
+        <Route path="/users/:id" element={<User allUsers={allUsers} />} />
+        <Route path='/users' element={<Users allUsers={allUsers} />} />
       </Routes>
     </div>
   )

@@ -1,25 +1,8 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 
-import userService from '../services/users'
-
-const Users = () => {
-  const allUsers = useQuery({
-    queryKey: ['users'],
-    queryFn: userService.getAll,
-    refetchOnWindowFocus: false,
-  })
-
-  if (allUsers.isPending) {
-    return <div>Loading users...</div>
-  }
-
-  if (allUsers.isError) {
-    return  <div>
-      User service not available due to problems in server
-    </div>
-  }
-
+const Users = ({ allUsers }) => {
   // console.log(allUsers.data)
 
   return (
@@ -33,7 +16,7 @@ const Users = () => {
           </tr>
           {allUsers.data.map(user => 
             <tr key={user.id}>
-              <td>{user.name}</td>
+              <td><Link to={`/users/${user.id}`}>{user.name}</Link></td>
               <td>{user.blogs.length}</td>
             </tr>
           )}
