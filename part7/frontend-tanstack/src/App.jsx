@@ -1,4 +1,5 @@
 import { useEffect, createRef, useContext } from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import blogService from './services/blogs'
@@ -10,6 +11,7 @@ import Blog from './components/Blog'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import Users from './components/Users'
 
 import { useNotificationDispatch } from './reducers/NotificationContext'
 import UserContext from './reducers/UserContext'
@@ -20,7 +22,7 @@ const App = () => {
   const notificationDispatch = useNotificationDispatch()
   const [user, userDispatch] = useContext(UserContext)
 
-  const { isPending, isError, data, error } = useQuery({
+  const allBlogs = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
     refetchOnWindowFocus: false
@@ -106,13 +108,13 @@ const App = () => {
     )
   }
 
-  if (isPending) {
-    return <div>Loading...</div>
+  if (allBlogs.isPending) {
+    return <div>Loading blogs...</div>
   }
 
-  if (isError) {
+  if (allBlogs.isError) {
     return  <div>
-      blog service not available due to problems in server
+      Blog service not available due to problems in server
     </div>
   }
 
@@ -126,17 +128,24 @@ const App = () => {
           logout
         </button>
       </div>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <NewBlog notify={notify} blogFormRef={blogFormRef} />
-      </Togglable>
-      {data.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleVote={handleVote}
-          handleDelete={handleDelete}
-        />
-      )}
+      <Routes>
+        <Route path='/' element={
+          <>
+            <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+              <NewBlog notify={notify} blogFormRef={blogFormRef} />
+            </Togglable>
+            {allBlogs.data.sort((a, b) => b.likes - a.likes).map(blog =>
+              <Blog
+                key={blog.id}
+                blog={blog}
+                handleVote={handleVote}
+                handleDelete={handleDelete}
+              />
+            )}
+          </>
+        } />
+        <Route path='/users' element={<Users />} />
+      </Routes>
     </div>
   )
 }
