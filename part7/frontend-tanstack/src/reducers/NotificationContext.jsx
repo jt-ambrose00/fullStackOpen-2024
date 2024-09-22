@@ -24,7 +24,7 @@ export const NotificationContextProvider = (props) => {
   )
 
   return (
-    <NotificationContext.Provider value={[notification, notificationDispatch] }>
+    <NotificationContext.Provider value={[notification, notificationDispatch]}>
       {props.children}
     </NotificationContext.Provider>
   )

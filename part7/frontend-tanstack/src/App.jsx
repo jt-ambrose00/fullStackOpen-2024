@@ -1,4 +1,4 @@
-import { useState, useEffect, createRef } from 'react'
+import { useEffect, createRef, useContext } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import blogService from './services/blogs'
@@ -12,12 +12,13 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 import { useNotificationDispatch } from './reducers/NotificationContext'
+import UserContext from './reducers/UserContext'
 
 const App = () => {
   const queryClient = useQueryClient()
-  const notificationDispatch = useNotificationDispatch()
   const blogFormRef = createRef()
-  const [user, setUser] = useState(null)
+  const notificationDispatch = useNotificationDispatch()
+  const [user, userDispatch] = useContext(UserContext)
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['blogs'],
@@ -48,7 +49,7 @@ const App = () => {
   useEffect(() => {
     const user = storage.loadUser()
     if (user) {
-      setUser(user)
+      userDispatch({ type: 'SET_USER', payload: user })
     }
   }, [])
 
@@ -59,19 +60,25 @@ const App = () => {
     }, seconds * 1000)
   }
 
+  const loginMutation = useMutation({
+    mutationFn: (credentials) => loginService.login(credentials)
+  })
+
   const handleLogin = async (credentials) => {
-    try {
-      const user = await loginService.login(credentials)
-      setUser(user)
-      storage.saveUser(user)
-      notify('LOGIN', `Welcome back, ${user.name}`)
-    } catch (error) {
-      notify('ERROR', 'Wrong credentials', 'failure')
-    }
+    loginMutation.mutate(credentials, {
+      onSuccess: (loggedInUser) => {
+        userDispatch({ type: 'SET_USER', payload: loggedInUser })
+        storage.saveUser(loggedInUser)
+        notify('LOGIN', `Welcome back, ${loggedInUser.name}`)
+      },
+      onError: () => {
+        notify('ERROR', 'Wrong credentials', 'failure')
+      }
+    })
   }
 
   const handleLogout = () => {
-    setUser(null)
+    userDispatch({ type: 'REMOVE_USER' })
     storage.removeUser()
     notify('LOGOUT', `Bye, ${user.name}!`)
   }

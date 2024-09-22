@@ -1,14 +1,17 @@
-import { useState } from 'react'
+import { useReducer } from 'react'
+
+import loginReducer, { initialState } from '../reducers/LoginReducer'
 
 const Login = ({ doLogin }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [loginState, dispatch] = useReducer(loginReducer, initialState)
 
   const handleLogin = (event) => {
     event.preventDefault()
-    doLogin({ username, password })
-    setUsername('')
-    setPassword('')
+    doLogin({
+      username: loginState.username,
+      password: loginState.password
+    })
+    dispatch({ type: 'RESET' })
   }
 
   return (
@@ -18,17 +21,23 @@ const Login = ({ doLogin }) => {
         <input
           type="text"
           data-testid='username'
-          value={username}
-          onChange={(e) => setUsername(e.target.value)} />
+          value={loginState.username}
+          onChange={(e) => dispatch({
+            type: 'SET_USERNAME', payload: e.target.value
+          })} 
+        />
       </label>
       <br />
       <label>
         Password:
         <input
           type="password"
-          value={password}
+          value={loginState.password}
           data-testid='password'
-          onChange={(e) => setPassword(e.target.value)} />
+          onChange={(e) => dispatch({
+            type: 'SET_PASSWORD', payload: e.target.value
+          })} 
+        />
       </label>
       <br />
       <input type="submit" value="Login" />
