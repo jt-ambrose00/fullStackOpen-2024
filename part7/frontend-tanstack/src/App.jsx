@@ -8,6 +8,7 @@ import storage from './services/storage'
 import userService from './services/users'
 
 import Login from './components/Login'
+import Blogs from './components/Blogs'
 import Blog from './components/Blog'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
@@ -142,7 +143,7 @@ const App = () => {
       <Notification />
       <div>
         {user.name} logged in
-        <button onClick={handleLogout}>
+        <button style={{ marginLeft: 3 }} onClick={handleLogout}>
           logout
         </button>
       </div>
@@ -153,15 +154,17 @@ const App = () => {
               <NewBlog notify={notify} blogFormRef={blogFormRef} />
             </Togglable>
             {allBlogs.data.sort((a, b) => b.likes - a.likes).map(blog =>
-              <Blog
-                key={blog.id}
-                blog={blog}
-                handleVote={handleVote}
-                handleDelete={handleDelete}
-              />
+              <Blogs key={blog.id} blog={blog} />
             )}
           </>
         } />
+        <Route path="/blogs/:id" element={
+          <Blog
+            allBlogs={allBlogs}
+            handleVote={handleVote}
+            handleDelete={handleDelete}
+          />
+        }/>
         <Route path="/users/:id" element={<User allUsers={allUsers} />} />
         <Route path='/users' element={<Users allUsers={allUsers} />} />
       </Routes>
