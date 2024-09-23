@@ -1,5 +1,5 @@
 import { useEffect, createRef, useContext } from 'react'
-import { Routes, Route, Link, useMatch } from 'react-router-dom'
+import { Link, Routes, Route, useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import blogService from './services/blogs'
@@ -22,6 +22,7 @@ import UserContext from './reducers/UserContext'
 const App = () => {
   const queryClient = useQueryClient()
   const blogFormRef = createRef()
+  const navigate = useNavigate()
   const notificationDispatch = useNotificationDispatch()
   const [user, userDispatch] = useContext(UserContext)
 
@@ -75,6 +76,7 @@ const App = () => {
         userDispatch({ type: 'SET_USER', payload: loggedInUser })
         storage.saveUser(loggedInUser)
         notify('LOGIN', `Welcome back, ${loggedInUser.name}`)
+        navigate('/')
       },
       onError: () => {
         notify('ERROR', 'Wrong credentials', 'failure')
@@ -98,6 +100,7 @@ const App = () => {
     if (window.confirm(`Remove ${blog.title} by ${blog.author}?`)) {
       deleteBlogMutation.mutate(blog.id)
       notify('DELETE', `${blog.title} by ${blog.author} was removed`)
+      navigate('/')
     }
   }
 
@@ -110,7 +113,7 @@ const App = () => {
   if (!user) {
     return (
       <div>
-        <h2>Blogs</h2>
+        <h2>Bloglist</h2>
         <Notification />
         <Login doLogin={handleLogin} />
       </div>
@@ -139,14 +142,24 @@ const App = () => {
 
   return (
     <div>
-      <h2>Blogs</h2>
+      <h2>Bloglist</h2>
       <Notification />
-      <div>
-        {user.name} logged in
-        <button style={{ marginLeft: 3 }} onClick={handleLogout}>
-          logout
-        </button>
-      </div>
+      <nav style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div>
+          <Link style={{ padding: 3 }} to="/">Blogs</Link>
+          <Link style={{ padding: 3 }} to="/users">Users</Link>
+        </div>
+        <div>
+          {user.name} logged in
+          <button style={{ marginLeft: 3 }} onClick={handleLogout}>
+            logout
+          </button>
+        </div>
+      </nav>
       <Routes>
         <Route path='/' element={
           <>
