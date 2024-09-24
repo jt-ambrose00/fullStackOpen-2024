@@ -5,6 +5,7 @@ const notificationReducer = (state, action) => {
     case "CREATE":
     case "LIKE":
     case "DELETE":
+    case "COMMENT":
     case "LOGIN":
     case "LOGOUT":
     case "ERROR":

@@ -12,8 +12,12 @@ const formReducer = (state = initialState, action) => {
       return { ...state, author: action.payload }
     case 'SET_URL':
       return { ...state, url: action.payload }
+    case 'SET_COMMENT':
+      return action.payload
     case 'RESET':
       return initialState
+    case 'RESET_COMMENT':
+      return ''
     default:
       return state
   }

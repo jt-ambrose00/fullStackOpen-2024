@@ -39,7 +39,7 @@ const App = () => {
       queryClient.setQueryData(['blogs'], blogs.map(blog => 
         updatedBlog.id === blog.id ? updatedBlog : blog
       ))
-    },
+    }
   })
 
   const deleteBlogMutation = useMutation({
@@ -48,6 +48,16 @@ const App = () => {
       const blogs = queryClient.getQueryData(['blogs'])
       queryClient.setQueryData(['blogs'], blogs.filter(blog => 
         blog.id !== id
+      ))
+    }
+  })
+
+  const newCommentMutation = useMutation({
+    mutationFn: (commentObject) => blogService.createComment(commentObject),
+    onSuccess: (updatedBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.map(blog => 
+        updatedBlog._id === blog.id ? updatedBlog : blog
       ))
     }
   })
@@ -102,6 +112,11 @@ const App = () => {
       notify('DELETE', `${blog.title} by ${blog.author} was removed`)
       navigate('/')
     }
+  }
+
+  const handleComment = async (id, comment) => {
+    newCommentMutation.mutate({ id, comment })
+    notify('COMMENT', `Comment added`)
   }
 
   const allUsers = useQuery({
@@ -176,6 +191,7 @@ const App = () => {
             allBlogs={allBlogs}
             handleVote={handleVote}
             handleDelete={handleDelete}
+            handleComment={handleComment}
           />
         }/>
         <Route path="/users/:id" element={<User allUsers={allUsers} />} />
