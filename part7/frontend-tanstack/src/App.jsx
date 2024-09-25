@@ -2,6 +2,8 @@ import { useEffect, createRef, useContext } from 'react'
 import { Link, Routes, Route, useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import { Container } from '@mui/material'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './services/storage'
@@ -15,6 +17,8 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
 import User from './components/User'
+import Footer from './components/Footer'
+import Navbar from './components/Navbar'
 
 import { useNotificationDispatch } from './reducers/NotificationContext'
 import UserContext from './reducers/UserContext'
@@ -49,6 +53,12 @@ const App = () => {
       queryClient.setQueryData(['blogs'], blogs.filter(blog => 
         blog.id !== id
       ))
+
+      const users = queryClient.getQueryData(['users'])
+      queryClient.setQueryData(['users'], users.map(user => ({
+        ...user,
+        blogs: user.blogs.filter(blog => blog.id !== id)
+      })))
     }
   })
 
@@ -89,7 +99,7 @@ const App = () => {
         navigate('/')
       },
       onError: () => {
-        notify('ERROR', 'Wrong credentials', 'failure')
+        notify('ERROR', 'Wrong credentials', 'error')
       }
     })
   }
@@ -127,11 +137,11 @@ const App = () => {
 
   if (!user) {
     return (
-      <div>
+      <Container>
         <h2>Bloglist</h2>
         <Notification />
         <Login doLogin={handleLogin} />
-      </div>
+      </Container>
     )
   }
 
@@ -156,25 +166,10 @@ const App = () => {
   }
 
   return (
-    <div>
+    <Container>
       <h2>Bloglist</h2>
+      <Navbar handleLogout={handleLogout} />
       <Notification />
-      <nav style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <div>
-          <Link style={{ padding: 3 }} to="/">Blogs</Link>
-          <Link style={{ padding: 3 }} to="/users">Users</Link>
-        </div>
-        <div>
-          {user.name} logged in
-          <button style={{ marginLeft: 3 }} onClick={handleLogout}>
-            logout
-          </button>
-        </div>
-      </nav>
       <Routes>
         <Route path='/' element={
           <>
@@ -197,7 +192,8 @@ const App = () => {
         <Route path="/users/:id" element={<User allUsers={allUsers} />} />
         <Route path='/users' element={<Users allUsers={allUsers} />} />
       </Routes>
-    </div>
+      <Footer />
+    </Container>
   )
 }
 

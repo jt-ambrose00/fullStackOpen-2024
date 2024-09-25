@@ -15,6 +15,12 @@ const NewBlog = ({ notify, blogFormRef }) => {
     onSuccess: (newBlog) => {
       const blogs = queryClient.getQueryData(['blogs'])
       queryClient.setQueryData(['blogs'], blogs.concat(newBlog))
+
+      const users = queryClient.getQueryData(['users'])
+      queryClient.setQueryData(['users'], users.map(user => ({
+        ...user,
+        blogs: user.blogs.concat(newBlog)
+      })))
     }
   })
 

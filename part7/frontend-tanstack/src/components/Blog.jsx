@@ -6,7 +6,7 @@ import storage from '../services/storage'
 import newBlogReducer from '../reducers/NewBlogReducer'
 
 const Blog = ({ allBlogs, handleVote, handleDelete, handleComment }) => {
-  const [commentState, dispatch] = useReducer(newBlogReducer, '')
+  const [commentState, commentDispatch] = useReducer(newBlogReducer, '')
 
   const id = useParams().id
   const blog = allBlogs.data.find(b => b.id === id)
@@ -22,7 +22,7 @@ const Blog = ({ allBlogs, handleVote, handleDelete, handleComment }) => {
   const handleSubmit = (event) => {
     event.preventDefault()
     handleComment(blog.id, commentState)
-    dispatch({ type: 'RESET_COMMENT' })
+    commentDispatch({ type: 'RESET_COMMENT' })
   }
 
   return (
@@ -51,7 +51,7 @@ const Blog = ({ allBlogs, handleVote, handleDelete, handleComment }) => {
               type="text"
               data-testid='comment'
               value={commentState}
-              onChange={(e) => dispatch({
+              onChange={(e) => commentDispatch({
                 type: 'SET_COMMENT', payload: e.target.value
               })}
             />

@@ -1,3 +1,4 @@
+import { Divider, List, ListItem } from '@mui/material'
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -11,13 +12,13 @@ const User = ({ allUsers }) => {
 
   return (
     <div>
-      <h2>{user.name}</h2>
-      <h3>Added blogs</h3>
-      <ul>
-        {user.blogs.map(blog => 
-          <li key={blog.id}>{blog.title}</li>
-        )}
-      </ul>
+      <h3>{user.name}'s blogs</h3>
+      {user.blogs.map(blog =>
+        <List key={blog.id}>
+          <ListItem>{blog.title}</ListItem>
+          <Divider />
+        </List>
+      )}
     </div>
   )
 }
