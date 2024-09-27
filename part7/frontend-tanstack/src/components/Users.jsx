@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+
 import {
   Paper,
   Table,
@@ -12,10 +13,10 @@ import {
 
 const Users = ({ allUsers }) => {
   return (
-    <div>
+    <>
       <h2>Users</h2>
       <TableContainer component={Paper}>
-        <Table size='small'>
+        <Table>
           <TableHead>
             <TableRow>
               <TableCell>
@@ -40,7 +41,7 @@ const Users = ({ allUsers }) => {
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </>
   )
 }
 

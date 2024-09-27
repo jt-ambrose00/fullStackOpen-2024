@@ -1,6 +1,17 @@
 import React, { useReducer } from 'react'
 import { useParams } from 'react-router-dom'
 
+import {
+  Box,
+  Button,
+  List,
+  ListItem,
+  TextField,
+  Typography
+} from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import ThumbUpIcon from '@mui/icons-material/ThumbUp'
+
 import storage from '../services/storage'
 
 import newBlogReducer from '../reducers/NewBlogReducer'
@@ -26,46 +37,85 @@ const Blog = ({ allBlogs, handleVote, handleDelete, handleComment }) => {
   }
 
   return (
-    <div className='blog'>
+    <>
       <h2>{blog.title} by {blog.author}</h2>
-      <div>
-        <div><a href={blog.url}>{blog.url}</a></div>
-        <div>
-          {blog.likes} likes
-          <button
-            style={{ marginLeft: 3 }}
+      <Box>
+        <Typography style={{ marginBottom: '1em' }}>
+          <a href={`https://${blog.url}`}>{blog.url}</a>
+        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '1em'
+          }}
+        >
+          <Typography>{blog.likes} likes</Typography>
+          <Button
+            variant='outlined'
+            color='primary'
+            size='small'
+            startIcon={<ThumbUpIcon />}
+            style={{ marginLeft: '1em' }}
             onClick={() => handleVote(blog)}
           >
-            like
-          </button>
-        </div>
-        <div>added by {nameOfUser}</div>
-        {canRemove && <button onClick={() => handleDelete(blog)}>
-          remove
-        </button>}
+            Like
+          </Button>
+        </Box>
+        <Typography style={{ marginBottom: '1em' }}>
+          Added by {nameOfUser}
+        </Typography>
+        {canRemove && 
+          <Button 
+            variant='outlined'
+            color='primary'
+            size='small'
+            startIcon={<DeleteIcon />}
+            style={{ marginBottom: '1em' }}
+            onClick={() => handleDelete(blog)}
+          >
+            Remove
+          </Button>}
         <h3>Comments</h3>
+        <List style={{ marginBottom: '1em' }}>
+          {blog.comments.length > 0
+            ? blog.comments.map(comment => 
+              <ListItem key={comment._id}>
+                {comment.content}
+              </ListItem>
+            )
+            : <ListItem>
+                No comments yet...
+              </ListItem>
+          }
+        </List>
         <form onSubmit={handleSubmit}>
-          <div>
-            <label>Comment:</label>
-            <input
-              type="text"
-              data-testid='comment'
-              value={commentState}
-              onChange={(e) => commentDispatch({
-                type: 'SET_COMMENT', payload: e.target.value
-              })}
-            />
-            <button type="submit">Post</button>
-          </div>
+          <TextField
+            label='Comment'
+            variant='outlined'
+            size='small'
+            fullWidth
+            multiline
+            rows={3}
+            data-testid='comment'
+            style={{ marginBottom: '0.5em' }}
+            value={commentState}
+            onChange={(e) => commentDispatch({
+              type: 'SET_COMMENT', payload: e.target.value
+            })}
+          />
+          <Button
+            variant='contained'
+            color='primary'
+            size='small'
+            type='submit'
+            style={{ marginBottom: '1em' }}
+          >
+            Submit
+          </Button>
         </form>
-        {blog.comments.length > 0
-          ? blog.comments.map(comment => 
-            <p key={comment._id}>{comment.content}</p>
-          )
-          : <p>No comments yet...</p>
-        }
-      </div>
-    </div>
+      </Box>
+    </>
   )
 }
 

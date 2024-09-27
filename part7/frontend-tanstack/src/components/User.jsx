@@ -1,6 +1,7 @@
-import { Divider, List, ListItem } from '@mui/material'
 import React from 'react'
 import { useParams } from 'react-router-dom'
+
+import { Box, Divider, List, ListItem } from '@mui/material'
 
 const User = ({ allUsers }) => {
   const id = useParams().id
@@ -11,15 +12,17 @@ const User = ({ allUsers }) => {
   }
 
   return (
-    <div>
-      <h3>{user.name}'s blogs</h3>
-      {user.blogs.map(blog =>
-        <List key={blog.id}>
-          <ListItem>{blog.title}</ListItem>
-          <Divider />
-        </List>
-      )}
-    </div>
+    <>
+      <h2>{user.name}'s blogs</h2>
+      <List>
+        {user.blogs.map(blog =>
+          <Box key={blog.id}>
+            <ListItem sx={{ padding: '1em' }}>{blog.title}</ListItem>
+            <Divider />
+          </Box>
+        )}
+      </List>
+    </>
   )
 }
 

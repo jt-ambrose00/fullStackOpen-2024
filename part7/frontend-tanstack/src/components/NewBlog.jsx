@@ -1,6 +1,8 @@
 import React, { useReducer } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { Box, Button, TextField } from '@mui/material'
+
 import blogService from '../services/blogs'
 
 import newBlogReducer, { initialState } from '../reducers/NewBlogReducer'
@@ -17,10 +19,11 @@ const NewBlog = ({ notify, blogFormRef }) => {
       queryClient.setQueryData(['blogs'], blogs.concat(newBlog))
 
       const users = queryClient.getQueryData(['users'])
-      queryClient.setQueryData(['users'], users.map(user => ({
-        ...user,
-        blogs: user.blogs.concat(newBlog)
-      })))
+      queryClient.setQueryData(['users'], users.map(user => 
+        newBlog.user.id === user.id
+          ? { ...user, blogs: user.blogs.concat(newBlog) }
+          : user
+      ))
     }
   })
 
@@ -41,45 +44,61 @@ const NewBlog = ({ notify, blogFormRef }) => {
   }
 
   return (
-    <div>
-      <h2>Create a New Blog</h2>
+    <>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title:</label>
-          <input
-            type="text"
+        <Box>
+          <TextField
+            label='Title'
+            variant='outlined'
+            style={{ marginBottom: 10 }}
+            size='small'
+            fullWidth
             data-testid='title'
             value={formState.title}
             onChange={(e) => dispatch({
               type: 'SET_TITLE', payload: e.target.value
             })}
           />
-        </div>
-        <div>
-          <label>URL:</label>
-          <input
-            type="text"
+        </Box>
+        <Box>
+          <TextField
+            label='URL'
+            variant='outlined'
+            style={{ marginBottom: 10 }}
+            size='small'
+            fullWidth
             data-testid='url'
             value={formState.url}
             onChange={(e) => dispatch({
               type: 'SET_URL', payload: e.target.value
             })}
           />
-        </div>
-        <div>
-          <label>Author:</label>
-          <input
-            type="text"
+        </Box>
+        <Box>
+          <TextField
+            label='Author'
+            variant='outlined'
+            style={{ marginBottom: 10 }}
+            size='small'
+            fullWidth
             data-testid='author'
             value={formState.author}
             onChange={(e) => dispatch({
               type: 'SET_AUTHOR', payload: e.target.value
             })}
           />
-        </div>
-        <button type="submit">Create</button>
+        </Box>
+        <Button
+          variant='contained'
+          color='primary'
+          style={{ marginBottom: 10 }}
+          size='small'
+          type='submit'
+        >
+          Submit
+        </Button>
       </form>
-    </div>
+    </>
   )
 }
 

@@ -1,8 +1,8 @@
 import { useEffect, createRef, useContext } from 'react'
-import { Link, Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { Container } from '@mui/material'
+import { Box, Container, List } from '@mui/material'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -138,60 +138,68 @@ const App = () => {
   if (!user) {
     return (
       <Container>
-        <h2>Bloglist</h2>
+        <h1>Bloglist</h1>
         <Notification />
         <Login doLogin={handleLogin} />
       </Container>
     )
   }
 
-  if (allBlogs.isPending) {
-    return <div>Loading blogs...</div>
+  if (allBlogs.isPending || allUsers.isPending) {
+    return <div>Loading...</div>
   }
 
-  if (allBlogs.isError) {
+  if (allBlogs.isError || allUsers.isError) {
     return  <div>
       Blog service not available due to problems in server
     </div>
   }
 
-  if (allUsers.isPending) {
-    return <div>Loading users...</div>
-  }
-
-  if (allUsers.isError) {
-    return  <div>
-      User service not available due to problems in server
-    </div>
-  }
-
   return (
-    <Container>
-      <h2>Bloglist</h2>
-      <Navbar handleLogout={handleLogout} />
-      <Notification />
-      <Routes>
-        <Route path='/' element={
-          <>
-            <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-              <NewBlog notify={notify} blogFormRef={blogFormRef} />
-            </Togglable>
-            {allBlogs.data.sort((a, b) => b.likes - a.likes).map(blog =>
-              <Blogs key={blog.id} blog={blog} />
-            )}
-          </>
-        } />
-        <Route path="/blogs/:id" element={
-          <Blog
-            allBlogs={allBlogs}
-            handleVote={handleVote}
-            handleDelete={handleDelete}
-            handleComment={handleComment}
-          />
-        }/>
-        <Route path="/users/:id" element={<User allUsers={allUsers} />} />
-        <Route path='/users' element={<Users allUsers={allUsers} />} />
-      </Routes>
+    <Container 
+      sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
+    >
+      <Box sx={{ flexGrow: 1 }}>
+        <h1>Bloglist</h1>
+        <Navbar handleLogout={handleLogout} />
+        <Notification />
+        <Routes>
+          <Route path='/' element={
+            <Box style={{ marginBottom: '3em' }}>
+              <h2>Create a New Blog</h2>
+              <Togglable buttonLabel="Add Blog" ref={blogFormRef}>
+                <NewBlog notify={notify} blogFormRef={blogFormRef} />
+              </Togglable>
+              <h2>Blogs</h2>
+              <List>
+                {allBlogs.data.sort((a, b) => b.likes - a.likes).map(blog =>
+                  <Blogs key={blog.id} blog={blog} />
+                )}
+              </List>
+            </Box>
+          } />
+          <Route path="/blogs/:id" element={
+            <Box style={{ marginBottom: '3em' }}>
+              <Blog
+                allBlogs={allBlogs}
+                handleVote={handleVote}
+                handleDelete={handleDelete}
+                handleComment={handleComment}
+              />
+            </Box>
+          }/>
+          <Route path="/users/:id" element={
+            <Box style={{ marginBottom: '3em' }}>
+              <User allUsers={allUsers} />
+            </Box>
+          } />
+          <Route path='/users' element={
+            <Box style={{ marginBottom: '3em' }}>
+              <Users allUsers={allUsers} />
+            </Box>
+          } />
+        </Routes>
+      </Box>
       <Footer />
     </Container>
   )

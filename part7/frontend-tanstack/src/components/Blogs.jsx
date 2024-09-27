@@ -1,18 +1,19 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const Blogs = ({ blog }) => {
-  const style = {
-    border: 'solid',
-    padding: 10,
-    borderWidth: 1,
-    marginBottom: 5,
-  }
+import { Divider, ListItem } from '@mui/material'
 
+const Blogs = ({ blog }) => {
   return (
-    <div style={style} className='blog'>
-      <Link to={`/blogs/${blog.id}`}>{blog.title}</Link> by {blog.author}
-    </div>
+    <>
+      <ListItem sx={{ padding: '1em' }}>
+        <Link to={`/blogs/${blog.id}`}>
+          {blog.title}
+        </Link>
+        &nbsp;by {blog.author}
+      </ListItem>
+      <Divider />
+    </>
   )
 }
 

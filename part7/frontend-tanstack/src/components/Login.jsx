@@ -1,5 +1,6 @@
 import { useReducer } from 'react'
-import { Button, styled, TextField } from '@mui/material'
+
+import { Box, Button, TextField } from '@mui/material'
 
 import loginReducer, { initialState } from '../reducers/LoginReducer'
 
@@ -15,44 +16,49 @@ const Login = ({ doLogin }) => {
     loginDispatch({ type: 'RESET' })
   }
 
-  const style = {
-    marginBottom: 10
-  }
-
   return (
     <>
-      <h3>Login</h3>
+      <h2>Login</h2>
       <form onSubmit={handleLogin}>
-        <div>
+        <Box>
           <TextField
             label='Username'
             variant='outlined'
+            style={{ marginBottom: 10 }}
+            size='small'
+            fullWidth
             data-testid='username'
-            style={style}
             value={loginState.username}
             onChange={(e) => loginDispatch({
               type: 'SET_USERNAME', payload: e.target.value
             })}
           />
-        </div>
-        <div>
+        </Box>
+        <Box>
           <TextField
             label='Password'
             type='password'
             variant='outlined'
+            style={{ marginBottom: 10 }}
+            size='small'
+            fullWidth
             data-testid='password'
-            style={style}
             value={loginState.password}
             onChange={(e) => loginDispatch({
               type: 'SET_PASSWORD', payload: e.target.value
             })}
           />
-        </div>
-        <div>
-          <Button variant='contained' color='primary' type='submit'>
+        </Box>
+        <Box>
+          <Button
+            variant='contained'
+            color='primary'
+            size='small'
+            type='submit'
+          >
             Login
           </Button>
-        </div>
+        </Box>
       </form>
     </>
   )
