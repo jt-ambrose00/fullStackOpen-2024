@@ -63,7 +63,7 @@ const App = () => {
   })
 
   const newCommentMutation = useMutation({
-    mutationFn: (commentObject) => blogService.createComment(commentObject),
+    mutationFn: blogService.createComment,
     onSuccess: (updatedBlog) => {
       const blogs = queryClient.getQueryData(['blogs'])
       queryClient.setQueryData(['blogs'], blogs.map(blog => 
